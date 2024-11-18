@@ -1,15 +1,35 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getUserBookmarksFromDB,
+  removeAllBookmarks,
+} from "../reducers/bookmarks";
 import styles from "../styles/Home.module.css";
 import Article from "./Article";
 import TopArticle from "./TopArticle";
-import { useSelector } from "react-redux";
 
 function Home() {
+  const dispatch = useDispatch();
   const [topArticle, setTopArticle] = useState({});
   const [articlesData, setArticlesData] = useState([]);
-
   const bookmarks = useSelector((state) => state.bookmarks.value);
+  const user = useSelector((state) => state.user.value);
+
+  useEffect(() => {
+    // This effect will run when the user is connected
+    if (user.isConnected) {
+      fetch("http://localhost:3011/displayAllUserBookmarks", {
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          dispatch(getUserBookmarksFromDB(data.bookmarks));
+        });
+    } else {
+      dispatch(removeAllBookmarks());
+    }
+  }, [user.isConnected]);
 
   useEffect(() => {
     fetch("http://localhost:3011/articles", {
@@ -23,14 +43,14 @@ function Home() {
   }, []);
 
   const articles = articlesData.map((data, i) => {
-    const isBookmarked = bookmarks.some(
+    const isBookmarked = bookmarks?.some(
       (bookmark) => bookmark.title === data.title
     );
     return <Article key={i} {...data} isBookmarked={isBookmarked} />;
   });
 
   let topArticleData;
-  if (bookmarks.some((bookmark) => bookmark.title === topArticle.title)) {
+  if (bookmarks?.some((bookmark) => bookmark.title === topArticle.title)) {
     topArticleData = <TopArticle {...topArticle} isBookmarked />;
   } else {
     topArticleData = <TopArticle {...topArticle} isBookmarked={false} />;

@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import styles from "../styles/Header.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Modal } from "antd";
-import Moment from "react-moment";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import Moment from "react-moment";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "../reducers/user";
 import { removeAllBookmarks } from "../reducers/bookmarks";
+import { login, logout } from "../reducers/user";
+import styles from "../styles/Header.module.css";
 
 function Header() {
   const dispatch = useDispatch();
@@ -220,9 +220,11 @@ function Header() {
         <Link href="/" className={styles.link}>
           Articles
         </Link>
-        <Link href="/bookmarks" className={styles.link}>
-          Bookmarks
-        </Link>
+        {user.isConnected && (
+          <Link href="/bookmarks" className={styles.link}>
+            Bookmarks
+          </Link>
+        )}
       </div>
 
       {isModalVisible && (

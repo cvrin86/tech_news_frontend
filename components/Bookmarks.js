@@ -1,10 +1,27 @@
 import Head from "next/head";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserBookmarksFromDB } from "../reducers/bookmarks";
 import styles from "../styles/Bookmarks.module.css";
-import { useSelector } from "react-redux";
 import Article from "./Article";
 
 function Bookmarks() {
+  const dispatch = useDispatch();
   const bookmarks = useSelector((state) => state.bookmarks.value);
+
+  useEffect(() => {
+    async function fetchBookmarks() {
+      const res = await fetch("http://localhost:3011/displayAllUserBookmarks", {
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (data.result) {
+        dispatch(getUserBookmarksFromDB(data.bookmarks));
+      }
+    }
+    fetchBookmarks();
+  }, []);
 
   const bookmarkedArticles = bookmarks.map((bookmark) => {
     return <Article {...bookmark} isBookmarked={true} />;

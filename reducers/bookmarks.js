@@ -19,9 +19,16 @@ const bookmarksSlice = createSlice({
     removeAllBookmarks: (state) => {
       state.value = [];
     },
+    getUserBookmarksFromDB: (state, action) => {
+      state.value = action.payload;
+    },
   },
 });
 
-export const { addBookmark, removeBookmark, removeAllBookmarks } =
-  bookmarksSlice.actions;
+export const {
+  addBookmark,
+  removeBookmark,
+  removeAllBookmarks,
+  getUserBookmarksFromDB,
+} = bookmarksSlice.actions;
 export default bookmarksSlice.reducer;
