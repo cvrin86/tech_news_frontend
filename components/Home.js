@@ -12,7 +12,9 @@ function Home() {
   const bookmarks = useSelector((state) => state.bookmarks.value);
 
   useEffect(() => {
-    fetch("http://localhost:3011/articles")
+    fetch("http://localhost:3011/articles", {
+      credentials: "include",
+    })
       .then((res) => res.json())
       .then((data) => {
         setTopArticle(data.articles[0]);
