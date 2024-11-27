@@ -131,12 +131,12 @@ function Header() {
               value: 8,
               message: "Password must contain at least 8 characters",
             },
-            pattern: {
-              value:
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-              message:
-                "Password must contain at least 1 upper case letter, 1 lower case letter, 1 number and 1 special character.",
-            },
+            // pattern: {
+            //   value:
+            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+            //   message:
+            //     "Password must contain at least 1 upper case letter, 1 lower case letter, 1 number and 1 special character.",
+            // },
           })}
         />
         {registerFormError.password && (
