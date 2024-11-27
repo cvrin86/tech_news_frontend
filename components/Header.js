@@ -46,22 +46,28 @@ function Header() {
   };
 
   async function handleLogout() {
-    const res = await fetch("http://localhost:3011/users/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await fetch(
+      "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/users/logout",
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
     await res.json();
     dispatch(logout());
     dispatch(removeAllBookmarks());
   }
 
   const handleRegister = async (data) => {
-    const res = await fetch("http://localhost:3011/users/signup", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    const res = await fetch(
+      "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/users/signup",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
 
     const dataFromBack = await res.json();
     if (dataFromBack.result) {
@@ -77,12 +83,15 @@ function Header() {
   };
 
   const handleConnect = async (data) => {
-    const res = await fetch("http://localhost:3011/users/signin", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    const res = await fetch(
+      "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/users/signin",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
 
     const dataFromBack = await res.json();
     if (dataFromBack.result) {

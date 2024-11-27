@@ -19,7 +19,7 @@ function Home() {
   useEffect(() => {
     // This effect will run when the user is connected
     if (user.isConnected) {
-      fetch("http://localhost:3011/displayAllUserBookmarks", {
+      fetch("https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/displayAllUserBookmarks", {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -32,7 +32,7 @@ function Home() {
   }, [user.isConnected]);
 
   useEffect(() => {
-    fetch("http://localhost:3011/articles", {
+    fetch("https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/articles", {
       credentials: "include",
     })
       .then((res) => res.json())

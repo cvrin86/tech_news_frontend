@@ -11,9 +11,12 @@ function Bookmarks() {
 
   useEffect(() => {
     async function fetchBookmarks() {
-      const res = await fetch("http://localhost:3011/displayAllUserBookmarks", {
-        credentials: "include",
-      });
+      const res = await fetch(
+        "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/displayAllUserBookmarks",
+        {
+          credentials: "include",
+        }
+      );
       const data = await res.json();
 
       if (data.result) {
