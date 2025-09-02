@@ -12,12 +12,11 @@ import { login, logout } from "../reducers/user";
 import styles from "../styles/Header.module.css";
 
 function Header() {
-
-  const api=process.env.NEXT_PUBLIC_API_URL;
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
 
-  const [date, setDate] = useState("2050-11-22T23:59:59");
+  const [date] = useState(new Date());
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -26,166 +25,119 @@ function Header() {
     handleSubmit: handleRegisterSubmit,
     formState: { errors: registerFormError },
     reset: resetRegisterForm,
-  } = useForm({
-    mode: "onBlur",
-  });
+  } = useForm({ mode: "onBlur" });
 
   const {
     register: connectForm,
     handleSubmit: handleConnectForm,
     formState: { errors: connectFormError },
     reset: resetConnectForm,
-  } = useForm({
-    mode: "onBlur",
-  });
+  } = useForm({ mode: "onBlur" });
 
-  useEffect(() => {
-    setDate(new Date());
-  }, []);
-
-  const showModal = () => {
-    setIsModalVisible(!isModalVisible);
-  };
+  const toggleModal = () => setIsModalVisible((prev) => !prev);
 
   async function handleLogout() {
-    const res = await fetch(
-      `${api}/users/logout`,
-      {
+    try {
+      const res = await fetch(`${api}/users/logout`, {
         method: "POST",
         credentials: "include",
-      }
-    );
-    await res.json();
-    dispatch(logout());
-    dispatch(removeAllBookmarks());
+      });
+      await res.json();
+      dispatch(logout());
+      dispatch(removeAllBookmarks());
+      toast.success("Logged out successfully");
+    } catch (err) {
+      toast.error("Network error during logout");
+    }
   }
 
   const handleRegister = async (data) => {
-    const res = await fetch(
-      `${api}/users/signup`,
-      {
+    try {
+      const res = await fetch(`${api}/users/signup`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      }
-    );
-
-    const dataFromBack = await res.json();
-    if (dataFromBack.result) {
-      resetRegisterForm();
-      setIsModalVisible(false);
-      toast.success("Account successfully created");
-      dispatch(login(data.username));
-    } else {
-      toast.error("Username already exists, please use another one", {
-        position: "top-right",
       });
+
+      const dataFromBack = await res.json();
+      if (dataFromBack.result) {
+        resetRegisterForm();
+        setIsModalVisible(false);
+        toast.success("Account successfully created");
+        dispatch(login({ username: data.username, isConnected: true }));
+      } else {
+        toast.error(dataFromBack.error || "Username already exists");
+      }
+    } catch (err) {
+      toast.error("Network error during signup");
     }
   };
 
   const handleConnect = async (data) => {
-    const res = await fetch(
-      `${api}/users/signin`,
-      {
+    try {
+      const res = await fetch(`${api}/users/signin`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      }
-    );
-
-    const dataFromBack = await res.json();
-    if (dataFromBack.result) {
-      resetConnectForm();
-      setIsModalVisible(false);
-      setErrorMsg("");
-      toast.success("User successfully connected");
-      dispatch(login(data.username));
-    } else {
-      setErrorMsg("Wrong username / password");
-      toast.error("Invalid credentials", {
-        position: "top-right",
       });
+
+      const dataFromBack = await res.json();
+      if (dataFromBack.result) {
+        resetConnectForm();
+        setIsModalVisible(false);
+        setErrorMsg("");
+        toast.success("User successfully connected");
+        dispatch(login({ username: data.username, isConnected: true }));
+      } else {
+        setErrorMsg("Wrong username / password");
+        toast.error("Invalid credentials");
+      }
+    } catch (err) {
+      toast.error("Network error during login");
     }
   };
 
   const modalContent = (
     <div className={styles.registerContainer}>
-      <form
-        onSubmit={handleRegisterSubmit(handleRegister)}
-        className={styles.registerSection}
-      >
+      <form onSubmit={handleRegisterSubmit(handleRegister)} className={styles.registerSection}>
         <p>Sign-up</p>
         <input
           type="text"
           placeholder="Username"
           {...registerForm("username", {
             required: "Username is required",
-            minLength: {
-              value: 3,
-              message: "Username must have at least 3 characters",
-            },
+            minLength: { value: 3, message: "Username must have at least 3 characters" },
           })}
         />
-        {registerFormError.username && (
-          <span className={styles.errorMsg}>
-            {registerFormError.username.message}
-          </span>
-        )}
+        {registerFormError.username && <span className={styles.errorMsg}>{registerFormError.username.message}</span>}
         <input
           type="password"
           placeholder="Password"
           {...registerForm("password", {
             required: "Password is required",
-            minLength: {
-              value: 8,
-              message: "Password must contain at least 8 characters",
-            },
-            // pattern: {
-            //   value:
-            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-            //   message:
-            //     "Password must contain at least 1 upper case letter, 1 lower case letter, 1 number and 1 special character.",
-            // },
+            minLength: { value: 8, message: "Password must contain at least 8 characters" },
           })}
         />
-        {registerFormError.password && (
-          <span className={styles.errorMsg}>
-            {registerFormError.password.message}
-          </span>
-        )}
+        {registerFormError.password && <span className={styles.errorMsg}>{registerFormError.password.message}</span>}
         <button>Register</button>
       </form>
-      <form
-        onSubmit={handleConnectForm(handleConnect)}
-        className={styles.registerSection}
-      >
+
+      <form onSubmit={handleConnectForm(handleConnect)} className={styles.registerSection}>
         <p>Sign-in</p>
         <input
           type="text"
           placeholder="Username"
-          {...connectForm("username", {
-            required: "Username is required",
-          })}
+          {...connectForm("username", { required: "Username is required" })}
         />
-        {connectFormError.username && (
-          <span className={styles.errorMsg}>
-            {connectFormError.username.message}
-          </span>
-        )}
+        {connectFormError.username && <span className={styles.errorMsg}>{connectFormError.username.message}</span>}
         <input
           type="password"
           placeholder="Password"
-          {...connectForm("password", {
-            required: "Password is required",
-          })}
+          {...connectForm("password", { required: "Password is required" })}
         />
-        {connectFormError.password && (
-          <span className={styles.errorMsg}>
-            {connectFormError.password.message}
-          </span>
-        )}
+        {connectFormError.password && <span className={styles.errorMsg}>{connectFormError.password.message}</span>}
         {errorMsg && <span className={styles.errorMsg}>{errorMsg}</span>}
         <button>Connect</button>
       </form>
@@ -200,23 +152,13 @@ function Header() {
       </p>
     );
   } else {
-    if (isModalVisible) {
-      userSection = (
-        <FontAwesomeIcon
-          icon={faXmark}
-          onClick={() => showModal()}
-          className={styles.userSection}
-        />
-      );
-    } else {
-      userSection = (
-        <FontAwesomeIcon
-          icon={faUser}
-          onClick={() => showModal()}
-          className={styles.userSection}
-        />
-      );
-    }
+    userSection = (
+      <FontAwesomeIcon
+        icon={isModalVisible ? faXmark : faUser}
+        onClick={toggleModal}
+        className={styles.userSection}
+      />
+    );
   }
 
   return (
@@ -228,14 +170,8 @@ function Header() {
       </div>
 
       <div className={styles.linkContainer}>
-        <Link href="/" className={styles.link}>
-          Articles
-        </Link>
-        {user.isConnected && (
-          <Link href="/bookmarks" className={styles.link}>
-            Bookmarks
-          </Link>
-        )}
+        <Link href="/" className={styles.link}>Articles</Link>
+        {user.isConnected && <Link href="/bookmarks" className={styles.link}>Bookmarks</Link>}
       </div>
 
       {isModalVisible && (
