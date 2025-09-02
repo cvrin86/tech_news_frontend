@@ -16,10 +16,12 @@ function Home() {
   const bookmarks = useSelector((state) => state.bookmarks.value);
   const user = useSelector((state) => state.user.value);
 
+  const api=process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     // This effect will run when the user is connected
     if (user.isConnected) {
-      fetch("https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/displayAllUserBookmarks", {
+      fetch(`${api}/displayAllUserBookmarks`, {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -31,16 +33,30 @@ function Home() {
     }
   }, [user.isConnected]);
 
-  useEffect(() => {
-    fetch("https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/articles", {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
+useEffect(() => {
+  fetch(`${api}/articles`, {
+    credentials: "include",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Réponse backend /articles:", data); // 👈 vérifie ici
+      if (data.articles && data.articles.length > 0) {
         setTopArticle(data.articles[0]);
         setArticlesData(data.articles.slice(1));
-      });
-  }, []);
+      } else if (Array.isArray(data) && data.length > 0) {
+        // Si ton backend renvoie directement un tableau
+        setTopArticle(data[0]);
+        setArticlesData(data.slice(1));
+      } else {
+        setTopArticle(null);
+        setArticlesData([]);
+      }
+    })
+    .catch((err) => {
+      console.error("Erreur fetch /articles:", err);
+    });
+}, []);
+
 
   const articles = articlesData.map((data, i) => {
     const isBookmarked = bookmarks?.some(

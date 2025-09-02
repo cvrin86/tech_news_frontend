@@ -9,10 +9,12 @@ function Bookmarks() {
   const dispatch = useDispatch();
   const bookmarks = useSelector((state) => state.bookmarks.value);
 
+   const api=process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     async function fetchBookmarks() {
       const res = await fetch(
-        "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/displayAllUserBookmarks",
+        `${api}/displayAllUserBookmarks`,
         {
           credentials: "include",
         }

@@ -12,6 +12,8 @@ import { login, logout } from "../reducers/user";
 import styles from "../styles/Header.module.css";
 
 function Header() {
+
+  const api=process.env.NEXT_PUBLIC_API_URL;
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
 
@@ -47,7 +49,7 @@ function Header() {
 
   async function handleLogout() {
     const res = await fetch(
-      "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/users/logout",
+      `${api}/users/logout`,
       {
         method: "POST",
         credentials: "include",
@@ -60,7 +62,7 @@ function Header() {
 
   const handleRegister = async (data) => {
     const res = await fetch(
-      "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/users/signup",
+      `${api}/users/signup`,
       {
         method: "POST",
         credentials: "include",
@@ -84,7 +86,7 @@ function Header() {
 
   const handleConnect = async (data) => {
     const res = await fetch(
-      "https://tech-news-backend-ain5hsan9-cristinavrs-projects.vercel.app/users/signin",
+      `${api}/users/signin`,
       {
         method: "POST",
         credentials: "include",
