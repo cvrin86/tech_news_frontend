@@ -16,6 +16,8 @@ function Home() {
   const bookmarks = useSelector((state) => state.bookmarks.value);
   const user = useSelector((state) => state.user.value);
 
+  const [visibleArticles,setVisiblesArticles] = useState(10);
+
   const api=process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -57,8 +59,30 @@ useEffect(() => {
     });
 }, []);
 
+// ← Ajoute ce useEffect pour le scroll
+useEffect(() => {
+  // Fonction appelée à chaque scroll de la page
+  const handleScroll = () => {
+    // Vérifie si l'utilisateur est proche du bas de la page (100px avant la fin)
+    if (
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
+    ) {
+      // Si oui, augmente le nombre d'articles affichés de 20 (sans dépasser le total)
+      setVisiblesArticles((prev) =>
+        prev + 20 > articlesData.length ? articlesData.length : prev + 20
+      );
+    }
+  };
 
-  const articles = articlesData.map((data, i) => {
+  // Ajoute l'écouteur d'événement scroll à la fenêtre
+  window.addEventListener("scroll", handleScroll);
+
+  // Nettoie l'écouteur quand le composant est démonté ou quand articlesData change
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [articlesData.length]); 
+
+  const articles = articlesData.slice(1,visibleArticles).map((data, i) => {
+
     const isBookmarked = bookmarks?.some(
       (bookmark) => bookmark.title === data.title
     );
