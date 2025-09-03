@@ -16,6 +16,9 @@ function Header() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
 
+  console.log("USER STATE :", user);
+
+
   const [date] = useState(new Date());
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -59,16 +62,13 @@ function Header() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      console.log("Response backend/signup:",res);
-      
 
       const dataFromBack = await res.json();
-      console.log("Data from back:", dataFromBack);
       if (dataFromBack.result) {
         resetRegisterForm();
         setIsModalVisible(false);
         toast.success("Account successfully created");
-        dispatch(login({ username: data.username, isConnected: true }));
+dispatch(login({ username: data.username.username, isConnected: true }));
       } else {
         toast.error(dataFromBack.error || "Username already exists");
       }
@@ -147,22 +147,24 @@ function Header() {
     </div>
   );
 
-  let userSection;
-  if (user.isConnected) {
-    userSection = (
-      <p>
-        Welcome {user.username} / <button onClick={handleLogout}>Logout</button>
-      </p>
-    );
-  } else {
-    userSection = (
-      <FontAwesomeIcon
-        icon={isModalVisible ? faXmark : faUser}
-        onClick={toggleModal}
-        className={styles.userSection}
-      />
-    );
-  }
+ let userSection;
+
+if (user && user.isConnected && user.username) {
+  userSection = (
+    <p>
+      Welcome {user.username.username} / <button onClick={handleLogout}>Logout</button>
+    </p>
+  );
+} else {
+  userSection = (
+    <FontAwesomeIcon
+      icon={isModalVisible ? faXmark : faUser}
+      onClick={toggleModal}
+      className={styles.userSection}
+    />
+  );
+}
+
 
   return (
     <header className={styles.header}>
