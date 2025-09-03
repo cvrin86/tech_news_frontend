@@ -59,8 +59,11 @@ function Header() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      console.log("Response backend/signup:",res);
+      
 
       const dataFromBack = await res.json();
+      console.log("Data from back:", dataFromBack);
       if (dataFromBack.result) {
         resetRegisterForm();
         setIsModalVisible(false);
